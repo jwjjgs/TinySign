@@ -7,14 +7,12 @@
  */
 
 return [
-    '四川移动掌上营业厅' => [
-        'ignore' => [],
+    '脚本名称' => [
+        'ignore' => ['被忽略方法'],
         'params' => [
-            'JSESSIONID' => 'b1yo2tSaRo7VH1JOJZej8j43VZ8TdLoSM5W20YUbG9rCAokHPm4M',
-            'SSOCookie' => 'BEAA91B83BAF258C7CF1717320B43595',
+            'cookie' => 'cookie',
         ],
-        'time' => 5,
-        'nop' => true,
-        '说明' => '暂无说明',
+        'time' => 5, //间隔 默认5 单位毫秒 建议不填
+        'nop' => true //是否跳过 测试用 建议不填
     ]
 ];
