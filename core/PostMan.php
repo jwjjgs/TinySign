@@ -14,7 +14,7 @@ class PostMan
         /*
          * 参数
          * 网址 url
-         * 类型 type [POST/GET]
+         * 类型 type [POST/GET] 默认GET
          * 数据 data
          * 令牌 cookie
          * 协头 header //数组
@@ -23,9 +23,9 @@ class PostMan
             return '';
         $header = self::header($data['header'] ?? []);
         $ch = curl_init();
-        if ($data['type'] == 'POST') {
+        if (isset($data['type']) && $data['type'] == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data['data']);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data['data'] ?? '');
         }
         curl_setopt($ch, CURLOPT_URL, $data['url']);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
