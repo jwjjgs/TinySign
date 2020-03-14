@@ -84,4 +84,67 @@ class 京东
         return ['result' => R_ERROR, 'msg' => '未知'];
     }
 
+    public function 京东金融签到(): array
+    {
+        $data = [
+            'url' => 'https://ms.jr.jd.com/gw/generic/zc/h5/m/signRecords',
+            'type' => 'POST',
+            'data' => 'reqData=%7B%22bizLine%22%3A2%7D',
+            'cookie' => $this->cookie,
+        ];
+        $html = PostMan::send($data);
+        $json = json_decode($html, true);
+        if (!$json)
+            return ['result' => R_ERROR, 'msg' => '登录解析返回结果失败'];
+        if (!isset($json['resultData']['data']['login']))
+            return ['result' => R_ERROR, 'msg' => '登录失败'];
+        if (!$json['resultData']['data']['login'])
+            return ['result' => R_NO, 'msg' => 'Cookie失效'];
+        $data = [
+            'url' => 'https://ms.jr.jd.com/gw/generic/zc/h5/m/signRewardGift',
+            'type' => 'POST',
+            'data' => 'reqData=%7B%22bizLine%22%3A2%2C%22signDate%22%3A%221%22%2C%22deviceInfo%22%3A%7B%22os%22%3A%22iOS%22%7D%2C%22clientType%22%3A%22sms%22%2C%22clientVersion%22%3A%2211.0%22%7D',
+            'cookie' => $this->cookie,
+            'header' => ['Referer' => 'https://jddx.jd.com/m/jddnew/money/index.html'],
+        ];
+        $html = PostMan::send($data);
+        $json = json_decode($html, true);
+        if (!$json)
+            return ['result' => R_ERROR, 'msg' => '签到解析返回结果失败'];
+        if ($json['resultData']['resultCode'] == '00000')
+            if ($json['resultData']['data']['rewardAmount'] == 1)
+                return ['result' => R_OK, 'msg' => "获得{$json['resultData']['data']['beanAward']['rewardAmount']}京豆"];
+            else
+                return ['result' => R_OK, 'msg' => "未获得"];
+        if (preg_match('/(发放失败|70111)/', $html))
+            return ['result' => R_OK, 'msg' => '已签过'];
+        if (preg_match('/(\"resultCode\":3|请先登录)/', $html))
+            return ['result' => R_NO, 'msg' => 'Cookie失效'];
+        return ['result' => R_ERROR, 'msg' => '未知'];
+    }
+
+    public function 京东金融钢镚(): array
+    {
+        $data = [
+            'url' => 'https://ms.jr.jd.com/gw/generic/gry/h5/m/signIn',
+            'type' => 'POST',
+            'data' => 'reqData=%7B%22channelSource%22%3A%22JRAPP%22%2C%22riskDeviceParam%22%3A%22%7B%7D%22%7D',
+            'cookie' => $this->cookie,
+        ];
+        $html = PostMan::send($data);
+        $json = json_decode($html, true);
+        if (!$json)
+            return ['result' => R_ERROR, 'msg' => '签到解析返回结果失败'];
+        if (preg_match('/\"resBusiCode\":0/', $html)) {
+            $val = $json['resultData']['resBusiData']['actualTotalRewardsValue'];
+            return ['result' => R_OK, 'msg' => '获得' . strlen($val) == 1 ? '0.0' : '0.' . "{$val}钢镚"];
+        }
+        if (preg_match('/(已经领取|\"resBusiCode\":15)/', $html))
+            return ['result' => R_OK, 'msg' => '已签过'];
+        if (preg_match('/未实名/', $html))
+            return ['result' => R_NO, 'msg' => '未实名'];
+        if (preg_match('/(\"resultCode\":3|请先登录)/', $html))
+            return ['result' => R_NO, 'msg' => 'Cookie失效'];
+        return ['result' => R_ERROR, 'msg' => '未知'];
+    }
 }
