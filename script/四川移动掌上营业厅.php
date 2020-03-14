@@ -31,8 +31,8 @@ class 四川移动掌上营业厅
         ];
         $json = json_decode(PostMan::send($data), true);
         if (!$json)
-            return ['result' => false, 'msg' => '解析返回结果失败'];
-        return ['result' => isset($json['result']['info']), 'msg' => $json['result']['info']];
+            return ['result' => R_ERROR, 'msg' => '解析返回结果失败'];
+        return ['result' => isset($json['result']['info']) ? R_OK : R_NO, 'msg' => $json['result']['info']];
     }
 
     public function 签到(): array
@@ -45,8 +45,8 @@ class 四川移动掌上营业厅
         ];
         $json = json_decode(PostMan::send($data), true);
         if (!$json)
-            return ['result' => false, 'msg' => '解析返回结果失败'];
-        return ['result' => isset($json['result']['info']), 'msg' => $json['result']['info']];
+            return ['result' => R_ERROR, 'msg' => '解析返回结果失败'];
+        return ['result' => isset($json['result']['info']) ? R_OK : R_NO, 'msg' => $json['result']['info']];
     }
 
     public function 大转盘1(): array
@@ -59,8 +59,8 @@ class 四川移动掌上营业厅
         ];
         $json = json_decode(PostMan::send($data), true);
         if (!$json)
-            return ['result' => false, 'msg' => '解析返回结果失败'];
-        return ['result' => isset($json['result']['info']), 'msg' => $json['result']['info']];
+            return ['result' => R_ERROR, 'msg' => '解析返回结果失败'];
+        return ['result' => isset($json['result']['info']) ? R_OK : R_NO, 'msg' => $json['result']['info']];
     }
 
     public function 大转盘2(): array
@@ -73,7 +73,7 @@ class 四川移动掌上营业厅
         ];
         $json = json_decode(PostMan::send($data), true);
         if (!$json)
-            return ['result' => false, 'msg' => '解析返回结果失败'];
-        return ['result' => isset($json['result']['info']), 'msg' => $json['result']['info']];
+            return ['result' => R_ERROR, 'msg' => '解析返回结果失败'];
+        return ['result' => isset($json['result']['info']) ? R_OK : R_NO, 'msg' => $json['result']['info']];
     }
 }

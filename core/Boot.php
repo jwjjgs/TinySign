@@ -13,10 +13,7 @@ class Boot
     //默认忽略的方法
     private static $ignore = ['__construct'];
     //初始成功失败数组
-    private static $suc = [];
-    private static $fai = [];
-    private static $total_suc = 0;
-    private static $total_fai = 0;
+    private static $arr = ['R_OK' => [], 'R_NO' => [], 'R_ERROR' => []];
 
     public static function run(): void
     {
@@ -40,7 +37,7 @@ class Boot
 
                     //初始化其他参数
                     $time = ($val['time'] ?? 5) * 1000;
-                    $temp_arr = ['suc' => [], 'fai' => []];
+                    $temp_arr = ['R_OK' => [], 'R_NO' => [], 'R_ERROR' => []];
 
                     //执行方法
                     foreach ($methods as $method) {
@@ -49,26 +46,37 @@ class Boot
                         $arr = $app->$method();
                         //判断是否多个返回值
                         if (isset($arr['result']))
-                            if ($arr['result'])
-                                $temp_arr['suc'][$method] = $arr['msg'];
-                            else
-                                $temp_arr['fai'][$method] = $arr['msg'];
+                            switch ($arr['result']) {
+                                case R_OK:
+                                    $temp_arr['R_OK'][$method] = $arr['msg'];
+                                    break;
+                                case R_NO:
+                                    $temp_arr['R_NO'][$method] = $arr['msg'];
+                                    break;
+                                case R_ERROR:
+                                    $temp_arr['R_ERROR'][$method] = $arr['msg'];
+                                    break;
+                            }
                         else
                             foreach ($arr as $key => $a)
-                                if ($a['result'])
-                                    $temp_arr['suc']["{$method}({$key})"] = $a['msg'];
-                                else
-                                    $temp_arr['fai']["{$method}({$key})"] = $a['msg'];
+                                switch ($a['result']) {
+                                    case R_OK:
+                                        $temp_arr['R_OK']["{$method}({$key})"] = $a['msg'];
+                                        break;
+                                    case R_NO:
+                                        $temp_arr['R_NO']["{$method}({$key})"] = $a['msg'];
+                                        break;
+                                    case R_ERROR:
+                                        $temp_arr['R_ERROR']["{$method}({$key})"] = $a['msg'];
+                                        break;
+                                }
                         //间歇
                         usleep($time);
                     }
                     //统计
-                    if ($temp_arr['suc'])
-                        self::$suc[$key] = $temp_arr['suc'];
-                    if ($temp_arr['fai'])
-                        self::$fai[$key] = $temp_arr['fai'];
-                    self::$total_suc += count($temp_arr['suc']);
-                    self::$total_suc += count($temp_arr['fai']);
+                    foreach ($temp_arr as $R => $V)
+                        if ($V)
+                            self::$arr[$R][$key] = $V;
                     //释放对象
                     $app = null;
                     $methods = null;
@@ -84,14 +92,15 @@ class Boot
 
     private static function output(): void
     {
-        echo '<br />';
+        var_dump(json_encode(self::$arr));
+        /*echo '<br />';
         echo json_encode(self::$suc);
         echo '<br />';
         var_dump(self::$total_suc);
         echo '<br />';
         echo json_encode(self::$fai);
         echo '<br />';
-        var_dump(self::$total_fai);
+        var_dump(self::$total_fai);*/
     }
 
     private static function getApps(string $user): array
