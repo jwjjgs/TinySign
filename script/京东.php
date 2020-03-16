@@ -188,7 +188,7 @@ class 京东
             return ['result' => R_ERROR, 'msg' => '解析返回结果失败'];
         if (isset($json['data']['prizeBean']))
             if ($json['data']['luckyBox']['freeTimes'] > 0)
-                return array_merge(['result' => R_OK, 'msg' => "获得{$json['data']['prizeBean']['count']}京豆"], $this->京东商城转盘());
+                return array_merge(['result' => R_OK, 'msg' => "获得{$json['data']['prizeBean']['count']}京豆"], $this->京东商城摇一摇());
             else
                 return ['result' => R_OK, 'msg' => "获得{$json['data']['prizeBean']['count']}京豆"];
         if (isset($json['data']['prizeCoupon']))
@@ -554,6 +554,8 @@ class 京东
                 return ['result' => R_OK, 'msg' => "无京豆"];
         if (preg_match('/(已签到|已领取)/', $html))
             return ['result' => R_OK, 'msg' => '已签过'];
+        if (preg_match('/(未开始)/', $html))
+            return ['result' => R_NO, 'msg' => '活动未开始'];
         if (preg_match('/(不存在|已结束)/', $html))
             return ['result' => R_ERROR, 'msg' => '活动已结束'];
         return ['result' => R_ERROR, 'msg' => '未知'];
